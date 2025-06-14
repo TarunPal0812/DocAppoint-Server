@@ -49,3 +49,4 @@ pids.json
 
 # Optional: ignore test coverage from nyc or similar tools
 .nyc_output/
+
