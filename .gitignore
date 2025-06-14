@@ -1,0 +1,51 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment files
+.env
+.env.*.local
+
+# MongoDB local database dumps (if any)
+dump/
+*.gz
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Coverage reports
+coverage/
+
+# Build output (if any)
+dist/
+build/
+tmp/
+temp/
+
+# PM2 process file
+pids.json
+*.pm2.log
+
+# Optional: ignore test coverage from nyc or similar tools
+.nyc_output/
