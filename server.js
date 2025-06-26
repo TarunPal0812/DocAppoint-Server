@@ -5,6 +5,8 @@ import "dotenv/config"
 import { connectDB } from "./config/db.js"
 import connectCloudinary from "./config/cloudinary.js"
 import adminRouter from "./routes/admin.route.js"
+import doctorRoutes from "./routes/doctor.route.js"
+import userRoute from "./routes/user.route.js"
 
 // App config
 const app = express()
@@ -14,11 +16,17 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
-// Api Endpoints
+// API Endpoints for Admin
 
 app.use("/api/admin",adminRouter)
 
+// API Endpoints for Doctor
 
+app.use("/api/doctor",doctorRoutes)
+
+// API Endpoints for User
+
+app.use("/api/user",userRoute)
 
 app.listen(PORT,()=>{
     connectDB()
