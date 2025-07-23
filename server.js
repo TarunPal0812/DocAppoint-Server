@@ -16,6 +16,13 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json())
 
+
+// Test route
+
+app.get("/", (req, res) => {
+    res.send("Welcome to the HealthCare API")   
+})
+
 // API Endpoints for Admin
 
 app.use("/api/admin",adminRouter)
