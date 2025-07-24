@@ -20,7 +20,7 @@ app.use(express.json())
 // Test route
 
 app.get("/", (req, res) => {
-    res.send("Welcome to the HealthCare API")   
+    res.send("Welcome to the DocAppointment API")   
 })
 
 // API Endpoints for Admin
