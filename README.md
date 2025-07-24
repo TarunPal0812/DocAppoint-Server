@@ -1,183 +1,366 @@
-# DocAppoint Backend Documentation
 
-## Overview
-
-The **DocAppoint** backend is a robust and scalable RESTful API built using **Node.js** and **Express.js**. It serves as the backbone for managing users, doctors, appointments, and admin functionalities. The backend integrates with **MongoDB** for data storage, **Cloudinary** for image uploads, and **Razorpay** for payment processing.
 
 ---
 
-## Features
+# 🏥 DocAppoint – Backend API
 
-- **User Management**: Registration, login, profile management, and appointment booking.
-- **Doctor Management**: Doctor login, profile updates, and appointment handling.
-- **Admin Panel**: Manage doctors, appointments, and dashboard analytics.
-- **Payment Integration**: Razorpay for secure payment processing.
-- **Image Uploads**: Cloudinary for storing and managing images.
-- **Authentication**: Secure JWT-based authentication for users, doctors, and admins.
+**DocAppoint** is a full-stack doctor appointment system that streamlines patient-doctor bookings, profile management, payments, and digital scheduling.
+
+This is the **backend** built with `Node.js`, `Express`, `MongoDB`, `Cloudinary`, and `Razorpay`.
 
 ---
 
-## Tech Stack
+## 🔧 Tech Stack
 
-- **Node.js**: Runtime environment
-- **Express.js**: Web framework
-- **MongoDB**: NoSQL database
-- **Mongoose**: ODM for MongoDB
-- **Cloudinary**: Image storage
-- **Razorpay**: Payment gateway
-- **JWT**: Authentication
-- **Multer**: File uploads
-- **dotenv**: Environment variable management
+* **Backend**: Node.js, Express.js
+* **Database**: MongoDB + Mongoose
+* **Auth**: JWT, bcrypt
+* **Image Upload**: Cloudinary, Multer
+* **Payments**: Razorpay
+* **Utils**: dotenv, cors
 
 ---
 
-## Project Structure
+## 📦 Folder Structure
 
 ```
-docappoint-backend
-│
-├── config
-│   ├── db.js
-│   └── cloudinary.js
-│
-├── controllers
-│   ├── userController.js
-│   ├── doctorController.js
-│   └── adminController.js
-│
-├── middleware
-│   ├── authMiddleware.js
-│   └── errorMiddleware.js
-│
-├── models
-│   ├── userModel.js
-│   ├── doctorModel.js
-│   └── appointmentModel.js
-│
-├── routes
-│   ├── userRoutes.js
-│   ├── doctorRoutes.js
-│   └── adminRoutes.js
-│
-├── uploads
-│   └── profilePics
-│
-├── .env
-├── .gitignore
-├── package.json
+docappoint-backend/
+├── controllers/
+├── middlewares/
+├── models/
+├── routes/
+├── config/
+├── uploads/
+├── app.js
 └── server.js
 ```
 
-- **config/**: Configuration files for database and cloudinary.
-- **controllers/**: Request handlers for users, doctors, and admins.
-- **middleware/**: Custom middleware for authentication and error handling.
-- **models/**: Mongoose models for users, doctors, and appointments.
-- **routes/**: Express routes for user, doctor, and admin endpoints.
-- **uploads/**: Directory for storing uploaded profile pictures.
-- **.env**: Environment variables.
-- **.gitignore**: Git ignore file.
-- **package.json**: Project metadata and dependencies.
-- **server.js**: Entry point of the application.
+---
+
+## 🚀 Getting Started
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/your-username/docappoint-backend.git
+cd docappoint-backend
+npm install
+```
+
+### 2. Environment Variables
+
+Create a `.env` file:
+
+```env
+PORT=5000
+MONGO_URI=your_mongo_url
+JWT_SECRET=your_secret
+CLOUDINARY_CLOUD_NAME=xxx
+CLOUDINARY_API_KEY=xxx
+CLOUDINARY_API_SECRET=xxx
+RAZORPAY_KEY_ID=xxx
+RAZORPAY_KEY_SECRET=xxx
+```
+
+### 3. Run the Server
+
+```bash
+npm run dev
+```
 
 ---
 
-## Setup and Installation
+## 🧪 API Documentation
 
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/yourusername/docappoint-backend.git
-   ```
-
-2. Navigate to the project directory:
-
-   ```bash
-   cd docappoint-backend
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-4. Set up environment variables in a `.env` file. Refer to `.env.example` for the required variables.
-
-5. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-6. The server will run on `http://localhost:5000` by default.
+All routes start with `/api/<role>` (user, doctor, admin)
 
 ---
 
-## API Documentation
+## 👤 USER ROUTES – `/api/user`
 
-### User Endpoints
+### Register – `POST /register`
 
-- **Register**: `POST /api/users/register`
-- **Login**: `POST /api/users/login`
-- **Profile**: `GET /api/users/profile`
-- **Book Appointment**: `POST /api/users/appointment`
+**Request:**
 
-### Doctor Endpoints
+```json
+{
+  "name": "John",
+  "email": "john@mail.com",
+  "password": "123456"
+}
+```
 
-- **Login**: `POST /api/doctors/login`
-- **Profile**: `GET /api/doctors/profile`
-- **Appointments**: `GET /api/doctors/appointments`
+**Response:**
 
-### Admin Endpoints
-
-- **Login**: `POST /api/admin/login`
-- **Dashboard**: `GET /api/admin/dashboard`
-- **Manage Doctors**: `CRUD /api/admin/doctors`
-- **Manage Appointments**: `CRUD /api/admin/appointments`
-
-### Payment
-
-- **Order**: `POST /api/payment/order`
-- **Payment Verification**: `POST /api/payment/verify`
-
-### Image Upload
-
-- **Upload**: `POST /api/upload`
+```json
+{
+  "success": true,
+  "token": "jwt_token_here"
+}
+```
 
 ---
 
-## Contributing
+### Login – `POST /login`
 
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/YourFeature`
-3. Make your changes.
-4. Commit your changes: `git commit -m 'Add some feature'`
-5. Push to the branch: `git push origin feature/YourFeature`
-6. Submit a pull request.
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```json
+{
+  "email": "john@mail.com",
+  "password": "123456"
+}
+```
 
 ---
 
-## Acknowledgments
+### Get Profile – `GET /get-profile`
 
-- **Node.js** and **Express.js** for the backend framework.
-- **MongoDB** and **Mongoose** for the database.
-- **Cloudinary** for image storage.
-- **Razorpay** for payment processing.
-- **JWT** for authentication.
-- **Multer** for file uploads.
-- OpenAI for providing the AI assistance in documentation.
+**Headers:** `Authorization: Bearer <token>`
+
+```json
+{
+  "name": "John",
+  "email": "john@mail.com",
+  "appointments": []
+}
+```
 
 ---
 
-## Contact
+### Update Profile – `POST /update-profile`
 
-For any inquiries, please contact:
+**Headers:** Form-data with image file + token
 
-- **Tarun Pal**: [tarunpal0812@example.com](mailto:tarunpal0812@example.com)
-- **GitHub**: [TarunPal0812](https://github.com/TarunPal0812)
+---
+
+### Book Appointment – `POST /book-appointment`
+
+```json
+{
+  "doctorId": "64c...",
+  "date": "2025-07-24",
+  "time": "11:30"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "appointmentId": "abc123"
+}
+```
+
+---
+
+### List Appointments – `GET /appointments`
+
+---
+
+### Cancel Appointment – `POST /cancle-appointment`
+
+```json
+{
+  "appointmentId": "abc123"
+}
+```
+
+---
+
+### Razorpay Payment – `POST /payment-razorpay`
+
+```json
+{
+  "amount": 500
+}
+```
+
+**Response:**
+
+```json
+{
+  "order": {
+    "id": "order_9A33XWu170gUtm",
+    "amount": 500,
+    "currency": "INR"
+  }
+}
+```
+
+---
+
+### Verify Payment – `POST /verifyRazorpay`
+
+```json
+{
+  "order_id": "order_9A33XWu170gUtm",
+  "payment_id": "pay_29QQoUBi66xm2f",
+  "signature": "generated_signature"
+}
+```
+
+---
+
+### Refund Payment – `POST /refund-payment`
+
+```json
+{
+  "paymentId": "pay_29QQoUBi66xm2f"
+}
+```
+
+---
+
+## 🩺 DOCTOR ROUTES – `/api/doctor`
+
+### Login – `POST /login`
+
+```json
+{
+  "email": "doc@mail.com",
+  "password": "secret"
+}
+```
+
+---
+
+### Get Appointments – `GET /appointments`
+
+---
+
+### Complete Appointment – `POST /appointment-complete`
+
+```json
+{
+  "appointmentId": "abc123"
+}
+```
+
+---
+
+### Cancel Appointment – `POST /appointment-cancled`
+
+```json
+{
+  "appointmentId": "abc123"
+}
+```
+
+---
+
+### Doctor Dashboard – `GET /dashboard`
+
+Returns patient count, revenue, etc.
+
+---
+
+### Profile – `GET /profile`
+
+---
+
+### Update Profile – `POST /update-profile`
+
+```json
+{
+  "about": "Updated doctor profile",
+  "experience": "7 years"
+}
+```
+
+---
+
+## 👨‍⚕️ ADMIN ROUTES – `/api/admin`
+
+### Login – `POST /login`
+
+```json
+{
+  "email": "admin@mail.com",
+  "password": "admin123"
+}
+```
+
+---
+
+### Add Doctor – `POST /add-doctor`
+
+**Form Data with image + JSON body:**
+
+```json
+{
+  "name": "Dr. Smith",
+  "email": "smith@mail.com",
+  "password": "123456",
+  "speciality": "Cardiology",
+  "degree": "MBBS",
+  "experience": "10 years",
+  "about": "Expert in heart care",
+  "fees": 500,
+  "address": "New Delhi"
+}
+```
+
+---
+
+### All Doctors – `GET /all-doctors`
+
+---
+
+### Change Availability – `POST /change-availability`
+
+```json
+{
+  "doctorId": "64c...",
+  "isAvailable": true
+}
+```
+
+---
+
+### Cancel Appointment (Admin) – `POST /cancel-appointments`
+
+```json
+{
+  "appointmentId": "abc123"
+}
+```
+
+---
+
+### Dashboard – `GET /dashboard`
+
+---
+
+## 🔐 Auth Middlewares
+
+* **authUser** – Validates user token
+* **authDoctor** – Validates doctor token
+* **authAdmin** – Validates admin token
+
+---
+
+## 📷 Image Upload
+
+Handled via Multer middleware. Stored in Cloudinary via the `/config/cloudinary.js` integration.
+
+---
+
+## 💰 Payments
+
+* Razorpay order creation, verification & refund is handled securely via backend.
+* Routes: `/payment-razorpay`, `/verifyRazorpay`, `/refund-payment`
+
+---
+
+## 🧪 Testing
+
+Use **Postman** or **Thunder Client**. Auth-protected routes require `Authorization: Bearer <token>` header.
+
+---
+
+## 📄 License
+
+MIT © 2025 DocAppoint Team
+
+---
+
