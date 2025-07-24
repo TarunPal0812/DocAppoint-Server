@@ -31,7 +31,6 @@ docappoint-backend/
 ├── routes/
 ├── config/
 ├── uploads/
-├── app.js
 └── server.js
 ```
 
@@ -42,7 +41,7 @@ docappoint-backend/
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-username/docappoint-backend.git
+git clone https://github.com/TarunPal0812/docappoint-backend.git
 cd docappoint-backend
 npm install
 ```
