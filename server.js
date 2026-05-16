@@ -17,7 +17,9 @@ app.use(
   cors({
     origin: [
       "https://docappoint-client.netlify.app",
-      "https://docappoint-admin.netlify.app/",
+      "https://docappoint-admin.netlify.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
       "http://localhost:3000",
     ],
     credentials: true,
