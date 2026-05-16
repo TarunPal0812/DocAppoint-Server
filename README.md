@@ -1,365 +1,125 @@
+# DocAppoint - Backend API
 
-
----
-
-# 🏥 DocAppoint – Backend API
-
-**DocAppoint** is a full-stack doctor appointment system that streamlines patient-doctor bookings, profile management, payments, and digital scheduling.
-
-This is the **backend** built with `Node.js`, `Express`, `MongoDB`, `Cloudinary`, and `Razorpay`.
+**DocAppoint** is a comprehensive, production-ready doctor appointment booking system. This repository contains the backend REST API that handles authentication, scheduling, payments, and data management for both the Patient Portal and the Admin/Doctor Dashboard.
 
 ---
 
-## 🔧 Tech Stack
+## Tech Stack
 
-* **Backend**: Node.js, Express.js
-* **Database**: MongoDB + Mongoose
-* **Auth**: JWT, bcrypt
-* **Image Upload**: Cloudinary, Multer
-* **Payments**: Razorpay
-* **Utils**: dotenv, cors
+- **Runtime Environment:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB with Mongoose ODM
+- **Authentication:** JSON Web Tokens (JWT) & Bcrypt password hashing
+- **Media Storage:** Cloudinary (integrated via Multer)
+- **Payment Gateway:** Razorpay
+- **Security & Utils:** CORS, Dotenv, Validator
 
 ---
 
-## 📦 Folder Structure
+## Project Structure
 
-```
-docappoint-backend/
-├── controllers/
-├── middlewares/
-├── models/
-├── routes/
-├── config/
-├── uploads/
-└── server.js
+```text
+backend/
+├── config/           # Database and Cloudinary configurations
+├── controllers/      # Route controllers (admin, doctor, user)
+├── middlewares/      # Auth validation (authUser, authAdmin, authDoctor) & Multer
+├── models/           # Mongoose schemas (Appointment, Doctor, User)
+├── routes/           # API route definitions
+├── uploads/          # Temporary local storage for image uploads
+├── seed.js           # Database seeding script for sample doctors
+└── server.js         # Entry point and Express app setup
 ```
 
 ---
 
-## 🚀 Getting Started
+## Setup & Installation
 
-### 1. Clone & Install
-
+### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/TarunPal0812/docappoint-backend.git
-cd docappoint-backend
+cd backend
 npm install
 ```
 
-### 2. Environment Variables
-
-Create a `.env` file:
+### 2. Environment Configuration
+Create a `.env` file in the root of the `backend` directory with the following variables:
 
 ```env
-PORT=5000
-MONGO_URI=your_mongo_url
-JWT_SECRET=your_secret
-CLOUDINARY_CLOUD_NAME=xxx
-CLOUDINARY_API_KEY=xxx
-CLOUDINARY_API_SECRET=xxx
-RAZORPAY_KEY_ID=xxx
-RAZORPAY_KEY_SECRET=xxx
+PORT=3001
+MONGODB_URI="mongodb+srv://<user>:<password>@cluster0..."
+
+# Cloudinary Storage
+CLOUDINARY_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_api_key"
+CLOUDINARY_SECRET_KEY="your_secret_key"
+
+# Admin Credentials
+ADMIN_EMAIL="admin@gmail.com"
+ADMIN_PASSWORD="admin"
+
+# Security
+JWT_SECRET="your_secure_jwt_secret"
+
+# Razorpay Integration
+KEY_ID="rzp_test_..."
+KEY_SECRET="..."
+CURRENCY="INR"
 ```
 
-### 3. Run the Server
-
+### 3. Database Seeding (Optional)
+To quickly populate the database with sample doctors across various specializations:
 ```bash
-npm run dev
+npm run seed
+```
+*(All seeded doctors use the password `Doctor@1234`)*
+
+### 4. Start the Server
+```bash
+# Starts the server using nodemon for development
+npm run start 
 ```
 
----
-
-## 🧪 API Documentation
-
-All routes start with `/api/<role>` (user, doctor, admin)
+The server will be running on `http://localhost:3001`.
 
 ---
 
-## 👤 USER ROUTES – `/api/user`
+## Live Deployment
 
-### Register – `POST /register`
-
-**Request:**
-
-```json
-{
-  "name": "John",
-  "email": "john@mail.com",
-  "password": "123456"
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "token": "jwt_token_here"
-}
-```
+- **Production API URL:** https://docappoint-server-eyak.onrender.com
 
 ---
 
-### Login – `POST /login`
+## Core API Endpoints
 
-```json
-{
-  "email": "john@mail.com",
-  "password": "123456"
-}
-```
+### User Endpoints (/api/user)
+- `POST /register` - Register a new patient
+- `POST /login` - Patient login
+- `GET /get-profile` - Fetch patient profile
+- `POST /update-profile` - Update profile & avatar
+- `POST /book-appointment` - Schedule a new appointment
+- `GET /appointments` - List patient's appointments
+- `POST /cancle-appointment` - Cancel an appointment
+- `POST /payment-razorpay` - Create Razorpay order
+- `POST /verifyRazorpay` - Verify payment signature
 
----
+### Doctor Endpoints (/api/doctor)
+- `POST /login` - Doctor login
+- `GET /appointments` - List assigned appointments
+- `POST /appointment-complete` - Mark appointment as completed
+- `POST /appointment-cancled` - Cancel an appointment
+- `GET /dashboard` - Doctor analytics dashboard
+- `GET /profile` - Fetch doctor profile
+- `POST /update-profile` - Update doctor profile
 
-### Get Profile – `GET /get-profile`
-
-**Headers:** `Authorization: Bearer <token>`
-
-```json
-{
-  "name": "John",
-  "email": "john@mail.com",
-  "appointments": []
-}
-```
-
----
-
-### Update Profile – `POST /update-profile`
-
-**Headers:** Form-data with image file + token
-
----
-
-### Book Appointment – `POST /book-appointment`
-
-```json
-{
-  "doctorId": "64c...",
-  "date": "2025-07-24",
-  "time": "11:30"
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "appointmentId": "abc123"
-}
-```
+### Admin Endpoints (/api/admin)
+- `POST /login` - Admin login
+- `POST /add-doctor` - Register a new doctor with image upload
+- `GET /all-doctors` - List all registered doctors
+- `POST /change-availability` - Toggle doctor availability
+- `GET /appointments` - View all system appointments
+- `POST /cancel-appointments` - Admin cancellation
+- `GET /dashboard` - System-wide analytics dashboard
 
 ---
 
-### List Appointments – `GET /appointments`
-
----
-
-### Cancel Appointment – `POST /cancle-appointment`
-
-```json
-{
-  "appointmentId": "abc123"
-}
-```
-
----
-
-### Razorpay Payment – `POST /payment-razorpay`
-
-```json
-{
-  "amount": 500
-}
-```
-
-**Response:**
-
-```json
-{
-  "order": {
-    "id": "order_9A33XWu170gUtm",
-    "amount": 500,
-    "currency": "INR"
-  }
-}
-```
-
----
-
-### Verify Payment – `POST /verifyRazorpay`
-
-```json
-{
-  "order_id": "order_9A33XWu170gUtm",
-  "payment_id": "pay_29QQoUBi66xm2f",
-  "signature": "generated_signature"
-}
-```
-
----
-
-### Refund Payment – `POST /refund-payment`
-
-```json
-{
-  "paymentId": "pay_29QQoUBi66xm2f"
-}
-```
-
----
-
-## 🩺 DOCTOR ROUTES – `/api/doctor`
-
-### Login – `POST /login`
-
-```json
-{
-  "email": "doc@mail.com",
-  "password": "secret"
-}
-```
-
----
-
-### Get Appointments – `GET /appointments`
-
----
-
-### Complete Appointment – `POST /appointment-complete`
-
-```json
-{
-  "appointmentId": "abc123"
-}
-```
-
----
-
-### Cancel Appointment – `POST /appointment-cancled`
-
-```json
-{
-  "appointmentId": "abc123"
-}
-```
-
----
-
-### Doctor Dashboard – `GET /dashboard`
-
-Returns patient count, revenue, etc.
-
----
-
-### Profile – `GET /profile`
-
----
-
-### Update Profile – `POST /update-profile`
-
-```json
-{
-  "about": "Updated doctor profile",
-  "experience": "7 years"
-}
-```
-
----
-
-## 👨‍⚕️ ADMIN ROUTES – `/api/admin`
-
-### Login – `POST /login`
-
-```json
-{
-  "email": "admin@mail.com",
-  "password": "admin123"
-}
-```
-
----
-
-### Add Doctor – `POST /add-doctor`
-
-**Form Data with image + JSON body:**
-
-```json
-{
-  "name": "Dr. Smith",
-  "email": "smith@mail.com",
-  "password": "123456",
-  "speciality": "Cardiology",
-  "degree": "MBBS",
-  "experience": "10 years",
-  "about": "Expert in heart care",
-  "fees": 500,
-  "address": "New Delhi"
-}
-```
-
----
-
-### All Doctors – `GET /all-doctors`
-
----
-
-### Change Availability – `POST /change-availability`
-
-```json
-{
-  "doctorId": "64c...",
-  "isAvailable": true
-}
-```
-
----
-
-### Cancel Appointment (Admin) – `POST /cancel-appointments`
-
-```json
-{
-  "appointmentId": "abc123"
-}
-```
-
----
-
-### Dashboard – `GET /dashboard`
-
----
-
-## 🔐 Auth Middlewares
-
-* **authUser** – Validates user token
-* **authDoctor** – Validates doctor token
-* **authAdmin** – Validates admin token
-
----
-
-## 📷 Image Upload
-
-Handled via Multer middleware. Stored in Cloudinary via the `/config/cloudinary.js` integration.
-
----
-
-## 💰 Payments
-
-* Razorpay order creation, verification & refund is handled securely via backend.
-* Routes: `/payment-razorpay`, `/verifyRazorpay`, `/refund-payment`
-
----
-
-## 🧪 Testing
-
-Use **Postman** or **Thunder Client**. Auth-protected routes require `Authorization: Bearer <token>` header.
-
----
-
-## 📄 License
-
-MIT © 2025 DocAppoint Team
-
----
-
+## License
+MIT License

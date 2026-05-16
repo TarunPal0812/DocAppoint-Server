@@ -16,7 +16,9 @@ pids/
 
 # dotenv environment files
 .env
+.env.*
 .env.*.local
+!.env.sample
 
 # MongoDB local database dumps (if any)
 dump/
