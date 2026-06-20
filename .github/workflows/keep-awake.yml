@@ -1,0 +1,16 @@
+name: Keep Server Awake
+
+on:
+  schedule:
+    # Runs every 14 minutes to prevent the server from sleeping
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows you to manually trigger it from GitHub Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Wakeup Endpoint
+        run: |
+          curl -s "https://docappoint-server-eyak.onrender.com/api/wakeup"
+          echo "Server pinged successfully!"
