@@ -1,0 +1,16 @@
+node_modules
+dist
+logs
+uploads/*
+!uploads/.gitkeep
+.git
+.github
+.husky
+.env
+.env.local
+.prettierrc
+eslint.config.mjs
+jest.config.ts
+**/*.spec.ts
+*.log
+npm-debug.log*

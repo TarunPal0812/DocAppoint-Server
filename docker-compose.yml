@@ -1,0 +1,75 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: docappoint_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: docappoint
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - docappoint_net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docappoint_backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB_NAME: docappoint
+      JWT_SECRET: ${JWT_SECRET:-docappoint_jwt_secret_key_12345}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@docappoint.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@1234}
+      CLOUDINARY_NAME: ${CLOUDINARY_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_SECRET_KEY: ${CLOUDINARY_SECRET_KEY}
+      RAZORPAY_KEY_ID: ${KEY_ID}
+      RAZORPAY_KEY_SECRET: ${KEY_SECRET}
+      CURRENCY: ${CURRENCY:-INR}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/usr/src/app/uploads
+      - ./logs:/usr/src/app/logs
+    networks:
+      - docappoint_net
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: docappoint_mongo_express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_BASICAUTH: "false"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - docappoint_net
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  docappoint_net:
+    driver: bridge
