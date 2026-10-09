@@ -25,6 +25,8 @@ userRoute.post('/update-profile', upload.single('image'), authUser, updateProfil
 userRoute.post('/book-appointment', authUser, bookAppointment);
 userRoute.get('/appointments', authUser, listAppointment);
 userRoute.post('/cancle-appointment', authUser, cancelAppointment);
+userRoute.post('/cancel-appointment', authUser, cancelAppointment);
+
 userRoute.post('/payment-razorpay', authUser, paymentRazorpay);
 userRoute.post('/verifyRazorpay', authUser, verifyRazorpay);
 userRoute.post('/refund-payment', authUser, refundPayment);

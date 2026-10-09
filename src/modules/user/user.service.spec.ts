@@ -43,4 +43,43 @@ describe('UserService', () => {
       expect(TokenUtil.signToken).toHaveBeenCalledWith({ id: '123' });
     });
   });
+
+  describe('cancelAppointment', () => {
+    it('should throw AppError if appointment userId does not match user', async () => {
+      mockUserRepository.findAppointmentById.mockResolvedValue({
+        _id: 'app123',
+        userId: 'differentUser',
+      } as any);
+
+      await expect(userService.cancelAppointment('user123', 'app123')).rejects.toThrow(AppError);
+    });
+
+    it('should cancel appointment and free slot when user matches', async () => {
+      mockUserRepository.findAppointmentById.mockResolvedValue({
+        _id: 'app123',
+        userId: 'user123',
+        docId: 'doc123',
+        slotDate: '12_10_2026',
+        slotTime: '10:30 am',
+      } as any);
+
+      mockUserRepository.findDoctorById.mockResolvedValue({
+        _id: 'doc123',
+        slots_booked: {
+          '12_10_2026': ['10:30 am'],
+        },
+      } as any);
+
+      await userService.cancelAppointment('user123', 'app123');
+
+      expect(mockUserRepository.updateAppointment).toHaveBeenCalledWith('app123', {
+        cancelled: true,
+      });
+      expect(mockUserRepository.updateDoctor).toHaveBeenCalledWith('doc123', {
+        slots_booked: {
+          '12_10_2026': [],
+        },
+      });
+    });
+  });
 });

@@ -51,4 +51,39 @@ describe('AdminService', () => {
       expect(dashboard.appointments).toBe(1);
     });
   });
+
+  describe('cancelAppointment', () => {
+    it('should throw AppError if appointment is not found', async () => {
+      mockAdminRepository.findAppointmentById.mockResolvedValue(null);
+
+      await expect(adminService.cancelAppointment('nonexistentId')).rejects.toThrow(AppError);
+    });
+
+    it('should cancel appointment and release doctor booked slot', async () => {
+      mockAdminRepository.findAppointmentById.mockResolvedValue({
+        _id: 'app123',
+        docId: 'doc123',
+        slotDate: '12_10_2026',
+        slotTime: '10:30 am',
+      } as any);
+
+      mockAdminRepository.findDoctorById.mockResolvedValue({
+        _id: 'doc123',
+        slots_booked: {
+          '12_10_2026': ['10:30 am', '11:00 am'],
+        },
+      } as any);
+
+      await adminService.cancelAppointment('app123');
+
+      expect(mockAdminRepository.updateAppointment).toHaveBeenCalledWith('app123', {
+        cancelled: true,
+      });
+      expect(mockAdminRepository.updateDoctor).toHaveBeenCalledWith('doc123', {
+        slots_booked: {
+          '12_10_2026': ['11:00 am'],
+        },
+      });
+    });
+  });
 });

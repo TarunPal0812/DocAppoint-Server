@@ -30,11 +30,30 @@ adminRouter.post(
 );
 adminRouter.get('/appointments', authAdmin, appointmentsAdmin);
 adminRouter.post(
+  '/cancel-appointment',
+  authAdmin,
+  validateRequest(cancelAppointmentAdminSchema),
+  appointmentCancellatiion,
+);
+adminRouter.post(
   '/cancel-appointments',
   authAdmin,
   validateRequest(cancelAppointmentAdminSchema),
   appointmentCancellatiion,
 );
+adminRouter.post(
+  '/cancle-appointment',
+  authAdmin,
+  validateRequest(cancelAppointmentAdminSchema),
+  appointmentCancellatiion,
+);
+adminRouter.post(
+  '/cancle-appointments',
+  authAdmin,
+  validateRequest(cancelAppointmentAdminSchema),
+  appointmentCancellatiion,
+);
+
 adminRouter.get('/dashboard', authAdmin, adminDashboard);
 
 export default adminRouter;

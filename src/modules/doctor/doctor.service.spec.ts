@@ -56,4 +56,41 @@ describe('DoctorService', () => {
       });
     });
   });
+
+  describe('cancelAppointment', () => {
+    it('should throw AppError if appointment docId does not match doctor', async () => {
+      mockDoctorRepository.findAppointmentById.mockResolvedValue({
+        _id: 'app123',
+        docId: 'otherDoc',
+      } as any);
+
+      await expect(doctorService.cancelAppointment('doc123', 'app123')).rejects.toThrow(AppError);
+    });
+
+    it('should cancel appointment if docId matches', async () => {
+      mockDoctorRepository.findAppointmentById.mockResolvedValue({
+        _id: 'app123',
+        docId: 'doc123',
+      } as any);
+
+      await doctorService.cancelAppointment('doc123', 'app123');
+      expect(mockDoctorRepository.updateAppointment).toHaveBeenCalledWith('app123', {
+        cancelled: true,
+      });
+    });
+  });
+
+  describe('markAppointmentComplete', () => {
+    it('should mark appointment as completed when docId matches', async () => {
+      mockDoctorRepository.findAppointmentById.mockResolvedValue({
+        _id: 'app123',
+        docId: 'doc123',
+      } as any);
+
+      await doctorService.markAppointmentComplete('doc123', 'app123');
+      expect(mockDoctorRepository.updateAppointment).toHaveBeenCalledWith('app123', {
+        isCompleted: true,
+      });
+    });
+  });
 });

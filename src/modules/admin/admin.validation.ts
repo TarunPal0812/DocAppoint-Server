@@ -8,9 +8,14 @@ export const adminLoginSchema = z.object({
 });
 
 export const cancelAppointmentAdminSchema = z.object({
-  body: z.object({
-    appointmentId: z.string().min(1, 'Appointment ID is required'),
-  }),
+  body: z
+    .object({
+      appointmentId: z.string().optional(),
+      id: z.string().optional(),
+    })
+    .refine((data) => data.appointmentId || data.id, {
+      message: 'Appointment ID is required',
+    }),
 });
 
 export const changeAvailabilitySchema = z.object({

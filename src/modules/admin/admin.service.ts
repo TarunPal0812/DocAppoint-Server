@@ -87,14 +87,18 @@ export class AdminService {
     await this.adminRepository.updateAppointment(appointmentId, { cancelled: true });
 
     const { docId, slotDate, slotTime } = appointment;
-    const doctorData = await this.adminRepository.findDoctorById(docId);
-    if (!doctorData) throw new AppError('Doctor not found', 404);
-
-    const slots_booked = doctorData.slots_booked || {};
-    if (slots_booked[slotDate]) {
-      slots_booked[slotDate] = slots_booked[slotDate].filter((e: string) => e !== slotTime);
+    if (docId) {
+      const doctorData = await this.adminRepository.findDoctorById(docId);
+      if (doctorData) {
+        const slots_booked = { ...(doctorData.slots_booked || {}) };
+        if (slots_booked[slotDate]) {
+          slots_booked[slotDate] = (slots_booked[slotDate] as string[]).filter(
+            (e: string) => e !== slotTime,
+          );
+          await this.adminRepository.updateDoctor(docId, { slots_booked });
+        }
+      }
     }
-    await this.adminRepository.updateDoctor(docId, { slots_booked });
   }
 
   async getDashboard() {

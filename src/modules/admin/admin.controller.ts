@@ -27,7 +27,8 @@ export const appointmentsAdmin = catchAsync(async (_req: Request, res: Response)
 });
 
 export const appointmentCancellatiion = catchAsync(async (req: Request, res: Response) => {
-  await adminService.cancelAppointment(req.body.appointmentId);
+  const appointmentId = (req.body.appointmentId || req.body.id) as string;
+  await adminService.cancelAppointment(appointmentId);
   res.status(200).json({ success: true, message: 'Appointment cancellation successful' });
 });
 

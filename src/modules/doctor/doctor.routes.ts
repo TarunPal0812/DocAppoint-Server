@@ -30,6 +30,19 @@ doctorRoutes.post(
   validateRequest(appointmentActionSchema),
   appointmentCancled,
 );
+doctorRoutes.post(
+  '/appointment-cancelled',
+  authDoctor,
+  validateRequest(appointmentActionSchema),
+  appointmentCancled,
+);
+doctorRoutes.post(
+  '/cancel-appointment',
+  authDoctor,
+  validateRequest(appointmentActionSchema),
+  appointmentCancled,
+);
+
 doctorRoutes.get('/dashboard', authDoctor, doctorDashboard);
 doctorRoutes.get('/profile', authDoctor, doctorProfile);
 doctorRoutes.post('/update-profile', authDoctor, updateDoctorProfile);
