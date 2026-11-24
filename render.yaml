@@ -1,0 +1,92 @@
+# ==============================================================================
+# Render Blueprint Specification for DocAppointment
+# Deploy seamlessly on Render: https://render.com
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Main Express API Gateway Service
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: docappoint-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/ai/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: docappoint
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@docappoint.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CLOUDINARY_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_SECRET_KEY
+        sync: false
+      - key: KEY_ID
+        sync: false
+      - key: KEY_SECRET
+        sync: false
+      - key: CURRENCY
+        value: INR
+      - key: CORS_ORIGIN
+        value: https://docappoint-client.netlify.app,https://docappoint-admin.netlify.app
+      - key: AI_AGENT_URL
+        fromService:
+          type: web
+          name: docappoint-ai-agent
+          property: host
+
+  # ----------------------------------------------------------------------------
+  # 2. FastAPI LangGraph AI Clinical Assistant Service
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: docappoint-ai-agent
+    runtime: python
+    rootDir: backend/ai_agent
+    plan: free
+    region: oregon
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run uvicorn docappoint_ai_agent.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: HOST
+        value: 0.0.0.0
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: GROQ_MODEL_NAME
+        value: openai/gpt-oss-120b
+      - key: GROQ_TEMPERATURE
+        value: "0.2"
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: docappoint-backend
+          property: host
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: docappoint
+      - key: JWT_SECRET
+        fromService:
+          type: web
+          name: docappoint-backend
+          envVarKey: JWT_SECRET

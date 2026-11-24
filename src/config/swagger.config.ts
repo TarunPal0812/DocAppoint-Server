@@ -1,6 +1,8 @@
 import { adminSwaggerPaths } from '../modules/admin/admin.swagger';
 import { doctorSwaggerPaths } from '../modules/doctor/doctor.swagger';
 import { userSwaggerPaths } from '../modules/user/user.swagger';
+import { aiSwaggerPaths } from '../modules/ai/ai.swagger';
+import { paymentSwaggerPaths } from '../modules/payment/payment.swagger';
 
 export const swaggerSpec = {
   openapi: '3.0.0',
@@ -59,5 +61,7 @@ export const swaggerSpec = {
     ...adminSwaggerPaths,
     ...doctorSwaggerPaths,
     ...userSwaggerPaths,
+    ...aiSwaggerPaths,
+    ...paymentSwaggerPaths,
   },
 };

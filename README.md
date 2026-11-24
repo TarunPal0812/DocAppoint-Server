@@ -118,5 +118,23 @@ Interactive Swagger documentation is available at:
 
 ---
 
+## Payment Gateway, Webhooks & Monitoring
+
+The payment system provides end-to-end auditability and resilience:
+- **Endpoints**:
+  - `POST /api/payment/create-order`: Generates a Razorpay order and tracks it in `PaymentModel`.
+  - `POST /api/payment/verify`: Cryptographically validates HMAC SHA256 signatures (`orderId|paymentId`) and updates appointment status to paid.
+  - `POST /api/payment/webhook`: Public asynchronous webhook endpoint validating `x-razorpay-signature` on raw request payloads. Processes `payment.captured`, `payment.failed`, and `refund.processed`.
+  - `POST /api/payment/record-failure`: Captures telemetry and bank rejection reasons from client modal drop-offs.
+  - `GET /api/payment/history`: Patient payment records and status history.
+  - `GET /api/payment/monitoring`: Admin dashboard displaying total volume, revenue, success rate (%), and top failure reasons.
+- **Environment Variables**:
+  - `RAZORPAY_KEY_ID`: Razorpay public API key
+  - `RAZORPAY_KEY_SECRET`: Razorpay private secret
+  - `RAZORPAY_WEBHOOK_SECRET`: Razorpay webhook secret (defaults to `RAZORPAY_KEY_SECRET`)
+  - `CURRENCY`: Currency code (default: `INR`)
+
+---
+
 ## License
 MIT License

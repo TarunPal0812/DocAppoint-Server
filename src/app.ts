@@ -13,6 +13,8 @@ import { globalErrorHandler } from './middlewares/errorHandler.middleware';
 import adminRouter from './modules/admin/admin.routes';
 import doctorRoutes from './modules/doctor/doctor.routes';
 import userRoute from './modules/user/user.routes';
+import aiRouter from './modules/ai/ai.routes';
+import paymentRouter from './modules/payment/payment.routes';
 
 const app: Application = express();
 
@@ -22,20 +24,45 @@ app.use(
   }),
 );
 
+const defaultOrigins = [
+  'https://docappoint-client.netlify.app',
+  'https://docappoint-admin.netlify.app',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+];
+
+const envOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+  : [];
+
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+
 app.use(
   cors({
-    origin: [
-      'https://docappoint-client.netlify.app',
-      'https://docappoint-admin.netlify.app',
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:3000',
-    ],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.onrender.com') ||
+        origin.endsWith('.netlify.app') ||
+        origin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   }),
 );
 
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req: Request, _res: Response, buf: Buffer) => {
+      (req as unknown as { rawBody?: Buffer }).rawBody = buf;
+    },
+  }),
+);
 
 app.use(
   morgan('combined', {
@@ -63,6 +90,8 @@ app.get('/api/docs.json', (_req: Request, res: Response) => {
 app.use('/api/admin', adminRouter);
 app.use('/api/doctor', doctorRoutes);
 app.use('/api/user', userRoute);
+app.use('/api/ai', aiRouter);
+app.use('/api/payment', paymentRouter);
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({
@@ -73,6 +102,9 @@ app.get('/', (_req: Request, res: Response) => {
       admin: '/api/admin',
       doctor: '/api/doctor',
       user: '/api/user',
+      payment: '/api/payment',
+      ai: '/api/ai',
+      ai_agent: process.env.AI_AGENT_URL || 'http://localhost:8000/docs',
       wakeup: '/api/wakeup',
     },
   });

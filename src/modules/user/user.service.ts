@@ -1,4 +1,6 @@
 import { UserRepository } from './user.repository';
+import { PaymentRepository } from '../payment/payment.repository';
+import { PaymentService } from '../payment/payment.service';
 import { HashUtil } from '../../utils/hash.util';
 import { TokenUtil } from '../../utils/token.util';
 import { v2 as cloudinary } from 'cloudinary';
@@ -133,7 +135,7 @@ export class UserService {
     await this.userRepository.updateDoctor(docId, { slots_booked });
   }
 
-  async paymentRazorpay(appointmentId: string) {
+  async paymentRazorpay(appointmentId: string, userId?: string) {
     const appointmentData = await this.userRepository.findAppointmentById(appointmentId);
     if (!appointmentData || appointmentData.cancelled) {
       throw new AppError('Appointment not found', 404);
@@ -146,15 +148,66 @@ export class UserService {
     };
 
     const order = await razorpayInstance.orders.create(options);
+
+    try {
+      const paymentRepo = new PaymentRepository();
+      await paymentRepo.createPayment({
+        appointmentId,
+        userId: userId || appointmentData.userId,
+        orderId: order.id,
+        amount: appointmentData.amount,
+        currency: process.env.CURRENCY || 'INR',
+        status: 'created',
+        receipt: appointmentId,
+      });
+    } catch (err: unknown) {
+      logger.warn(`Could not create PaymentModel audit record: ${err}`);
+    }
+
     return order;
   }
 
-  async verifyRazorpay(razorpay_order_id: string) {
-    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+  async verifyRazorpay(
+    input:
+      | string
+      | { razorpay_order_id: string; razorpay_payment_id?: string; razorpay_signature?: string },
+    userId?: string,
+  ) {
+    const orderId = typeof input === 'string' ? input : input.razorpay_order_id;
+    const paymentId = typeof input === 'object' ? input.razorpay_payment_id : undefined;
+    const signature = typeof input === 'object' ? input.razorpay_signature : undefined;
+
+    const paymentRepo = new PaymentRepository();
+
+    if (paymentId && signature) {
+      const paymentService = new PaymentService(paymentRepo);
+      try {
+        const res = await paymentService.verifyPayment(userId || '', {
+          razorpay_order_id: orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: signature,
+        });
+        return res.success;
+      } catch (err: unknown) {
+        logger.warn(`Cryptographic signature verification failed in verifyRazorpay: ${err}`);
+      }
+    }
+
+    const orderInfo = await razorpayInstance.orders.fetch(orderId);
     if (orderInfo.status === 'paid') {
       await this.userRepository.updateAppointment(orderInfo.receipt!, { payment: true });
+      await paymentRepo.recordStatusTransition(
+        orderId,
+        'captured',
+        'Verified via orders.fetch fallback',
+      );
       return true;
     }
+    await paymentRepo.recordStatusTransition(
+      orderId,
+      'failed',
+      'Verification failed: order not paid',
+    );
     return false;
   }
 

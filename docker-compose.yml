@@ -1,23 +1,4 @@
 services:
-  mongo:
-    image: mongo:7.0
-    container_name: docappoint_mongo
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: docappoint
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - docappoint_net
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
   backend:
     build:
       context: .
@@ -29,46 +10,45 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      MONGODB_URI: mongodb://mongo:27017
-      MONGODB_DB_NAME: docappoint
-      JWT_SECRET: ${JWT_SECRET:-docappoint_jwt_secret_key_12345}
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-docappoint}
+      JWT_SECRET: ${JWT_SECRET}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@docappoint.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@1234}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       CLOUDINARY_NAME: ${CLOUDINARY_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_SECRET_KEY: ${CLOUDINARY_SECRET_KEY}
       RAZORPAY_KEY_ID: ${KEY_ID}
       RAZORPAY_KEY_SECRET: ${KEY_SECRET}
       CURRENCY: ${CURRENCY:-INR}
-    depends_on:
-      mongo:
-        condition: service_healthy
+      AI_AGENT_URL: http://ai-agent:8000
     volumes:
       - ./uploads:/usr/src/app/uploads
       - ./logs:/usr/src/app/logs
     networks:
       - docappoint_net
 
-  mongo-express:
-    image: mongo-express:latest
-    container_name: docappoint_mongo_express
+  ai-agent:
+    build:
+      context: ./ai_agent
+      dockerfile: Dockerfile
+    container_name: docappoint_ai_agent
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "8000:8000"
     environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-      ME_CONFIG_BASICAUTH: "false"
-    depends_on:
-      mongo:
-        condition: service_healthy
+      HOST: 0.0.0.0
+      PORT: 8000
+      DEBUG: "false"
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-120b}
+      GROQ_MODEL_NAME: ${GROQ_MODEL_NAME:-openai/gpt-oss-120b}
+      BACKEND_URL: http://backend:3001
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-docappoint}
+      JWT_SECRET: ${JWT_SECRET}
     networks:
       - docappoint_net
-
-volumes:
-  mongo_data:
-    driver: local
 
 networks:
   docappoint_net:

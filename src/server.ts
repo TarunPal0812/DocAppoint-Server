@@ -3,24 +3,22 @@ import { connectDB } from './config/db.config';
 import { connectCloudinary } from './config/cloudinary.config';
 import { logger } from './utils/logger';
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
 const startServer = async () => {
   try {
     await connectDB();
     await connectCloudinary();
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       const mode = process.env.NODE_ENV || 'development';
-      const baseUrl = `http://localhost:${PORT}`;
-
       logger.info(`=======================================================`);
       logger.info(`DocAppointment Backend (${mode.toUpperCase()} MODE)`);
       logger.info(`=======================================================`);
-      logger.info(`Port [${PORT}]  -> Main API Server: ${baseUrl}`);
-      logger.info(`Port [${PORT}]  -> Swagger Docs:   ${baseUrl}/api/docs`);
-      logger.info(`Port [27017] -> MongoDB Service: docappoint`);
-      logger.info(`Port [8081]  -> Mongo Express GUI (if Docker enabled)`);
+      logger.info(`Listening on http://0.0.0.0:${PORT}`);
+      logger.info(`Swagger Docs: http://0.0.0.0:${PORT}/api/docs`);
+      logger.info(`AI Proxy:     http://0.0.0.0:${PORT}/api/ai`);
+      logger.info(`Database:     MongoDB Atlas`);
       logger.info(`=======================================================`);
     });
   } catch (error) {

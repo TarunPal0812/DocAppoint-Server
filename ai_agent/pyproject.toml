@@ -1,0 +1,38 @@
+[project]
+name = "docappoint-ai-agent"
+version = "0.1.0"
+description = "Production-grade AI Medical Triage and Doctor Appointment Booking Agent built with FastAPI, LangGraph, LangChain, Groq, and MongoDB"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "DocAppointment Team" }
+]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "langchain>=0.3.7",
+    "langchain-core>=0.3.15",
+    "langgraph>=0.2.45",
+    "langchain-groq>=0.2.1",
+    "pyjwt>=2.9.0",
+    "python-dotenv>=1.0.1",
+    "sse-starlette>=2.1.3",
+    "httpx>=0.27.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

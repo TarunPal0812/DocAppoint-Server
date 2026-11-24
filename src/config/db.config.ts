@@ -3,7 +3,11 @@ import { logger } from '../utils/logger';
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017';
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      logger.error('MONGODB_URI is not configured in environment variables');
+      process.exit(1);
+    }
     const dbName = process.env.MONGODB_DB_NAME || 'docappoint';
 
     mongoose.connection.on('connected', () => {

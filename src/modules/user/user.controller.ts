@@ -54,19 +54,23 @@ export const cancelAppointment = catchAsync(
   },
 );
 
-export const paymentRazorpay = catchAsync(async (req: Request, res: Response) => {
-  const order = await userService.paymentRazorpay(req.body.appointmentId);
-  res.status(200).json({ success: true, order });
-});
+export const paymentRazorpay = catchAsync(
+  async (req: Request & { user?: { userId: string } }, res: Response) => {
+    const order = await userService.paymentRazorpay(req.body.appointmentId, req.user?.userId);
+    res.status(200).json({ success: true, order });
+  },
+);
 
-export const verifyRazorpay = catchAsync(async (req: Request, res: Response) => {
-  const isPaid = await userService.verifyRazorpay(req.body.razorpay_order_id);
-  if (isPaid) {
-    res.status(200).json({ success: true, message: 'Payment Successfull' });
-  } else {
-    res.status(200).json({ success: false, message: 'Payment faild' });
-  }
-});
+export const verifyRazorpay = catchAsync(
+  async (req: Request & { user?: { userId: string } }, res: Response) => {
+    const isPaid = await userService.verifyRazorpay(req.body, req.user?.userId);
+    if (isPaid) {
+      res.status(200).json({ success: true, message: 'Payment Successfull' });
+    } else {
+      res.status(200).json({ success: false, message: 'Payment faild' });
+    }
+  },
+);
 
 export const refundPayment = catchAsync(async (req: Request, res: Response) => {
   await userService.refundPayment(req.body.razorpay_payment_id);
